@@ -1,13 +1,13 @@
 # Display Terms Shortcode
 
-Contributors: seothemes
-Tags: terms, shortcode, categories, tags, list
-Donate link: https://seothemes.com
-Requires at least: 4.8
-Tested up to: 4.8
-Stable tag: trunk
-License: GPL-2.0+
-License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+- Contributors: seothemes
+- Tags: terms, shortcode, categories, tags, list
+- Donate link: https://seothemes.com
+- Requires at least: 4.8
+- Tested up to: 4.8
+- Stable tag: trunk
+- License: GPL-2.0+
+- License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
 Display a listing of terms using the [display-terms] shortcode
 
