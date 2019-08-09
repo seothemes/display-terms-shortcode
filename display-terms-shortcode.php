@@ -3,7 +3,7 @@
  * Plugin Name: Display Terms Shortcode
  * Plugin URI:  https://github.com/seothemes/display-terms-shortcode/
  * Description: Display a list of terms using the [display-terms] shortcode.
- * Version:     1.0.0
+ * Version:     1.0.1
  * Author:      SEO Themes
  * Author URI:  https://seothemes.com/
  * License:     GPL-3.0-or-later
