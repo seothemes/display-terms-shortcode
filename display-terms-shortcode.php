@@ -3,24 +3,15 @@
  * Plugin Name: Display Terms Shortcode
  * Plugin URI:  https://github.com/seothemes/display-terms-shortcode/
  * Description: Display a list of terms using the [display-terms] shortcode.
- * Version:     0.1.0
+ * Version:     0.1.2
  * Author:      SEO Themes
- * Author URI:  https://seothemes.com
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2, as published by the Free Software Foundation. You may
- * NOT assume that you can use any other version of the GPL.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * Author URI:  https://www.seothemes.com
+ * License:     GPL-2.0+
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+ * Text Domain: jetpack
+ * Domain Path: /languages
  *
  * @package   Display Terms Shortcode
- * @version   0.1.0
- * @author    SEO Themes <info@seothemes.com>
- * @copyright Copyright (c) 2017, SEO Themes
- * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  */
 
 // Add the shortcode.
@@ -70,6 +61,7 @@ function display_terms_shortcode( $atts ) {
 		'show_description'       => false,
 		'show_count'             => false,
 		'show_image'             => true,
+		'image_size'             => 'full',
 	), $atts, 'display-terms' );
 
 	// Add image filter.
@@ -78,9 +70,7 @@ function display_terms_shortcode( $atts ) {
 	$terms  = get_terms( $atts );
 	$output = '<ul class="terms-list">';
 
-	/**
-	 * Loop through terms and output HTML.
-	 */
+	// Loop through terms and output HTML.
 	foreach ( $terms as $term ) {
 		$output .= '<li class="terms-list-item term-' . $term->slug . '">';
 
@@ -106,7 +96,10 @@ function display_terms_shortcode( $atts ) {
 
 		// Display term image.
 		if ( $atts['show_image'] ) {
-			$output .= $term->image;
+
+			if ( '' !== $term->latest_post ) {
+				$output .= '<img src="' . wp_get_attachment_image_url( $term->latest_post, $atts['image_size'] ) . '" alt="' . $term->name . ' ' . $term->taxonomy . '">';
+			}
 		}
 
 		if ( $atts['show_link'] ) {
@@ -134,9 +127,13 @@ function display_terms_shortcode( $atts ) {
  */
 function display_terms_get_image( $terms, $taxonomies, $args ) {
 
+	if ( ! $terms ) {
+		return;
+	}
+
 	foreach ( $terms as &$term ) {
 		$parent = new WP_Query(
-			array (
+			array(
 				'cat'    => $term->term_id,
 				'fields' => 'ids',
 			)
@@ -144,7 +141,7 @@ function display_terms_get_image( $terms, $taxonomies, $args ) {
 
 		if ( $parent->have_posts() ) {
 			$attach = new WP_Query(
-				array (
+				array(
 					'post_parent__in' => $parent->posts,
 					'post_type'       => 'attachment',
 					'post_status'     => 'inherit',
@@ -152,9 +149,9 @@ function display_terms_get_image( $terms, $taxonomies, $args ) {
 				)
 			);
 			if ( $attach->have_posts() ) {
-				$term->image = wp_get_attachment_image( $attach->posts[0]->ID, 'full' );
+				$term->latest_post = $attach->posts[0]->ID;
 			} else {
-				$term->image = ''; // Placeholder image.
+				$term->latest_post = ''; // TODO: Add placeholder image.
 			}
 		}
 	}

@@ -9,13 +9,53 @@
 - License: GPL-2.0+
 - License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
-Display a listing of terms using the [display-terms] shortcode
+Display a listing of terms using the `[display-terms]` shortcode
 
 ## Description
 
 The Display Terms Shortcode was written to allow users to easily display listings of terms without knowing PHP or editing template files.
 
 Add the shortcode in a post, page or widget and use the arguments to query based on tag, category, post type, and many other possibilities. You can also customize the output with parameters like: `include`, `child_of`, and `show_image`.
+
+To use the shortcode, simply place the `[display-terms]` shortcode in any post, page or widget and change the parameters to your liking.
+
+#### Available parameters (and defaults):
+
+* taxonomy               => 'category'
+* orderby                => 'name'
+* order                  => 'ASC'
+* hide_empty             => true
+* include                => 'all'
+* exclude                => 'all'
+* exclude_tree           => 'all'
+* number                 => false
+* offset                 => ''
+* fields                 => 'all'
+* name                   => ''
+* slug                   => ''
+* hierarchical           => true
+* search                 => ''
+* name__like             => ''
+* description__like      => ''
+* pad_counts             => false
+* get                    => ''
+* child_of               => false
+* childless              => false
+* cache_domain           => 'core'
+* update_term_meta_cache => true
+* meta_query             => ''
+* meta_key               => array()
+* meta_value             => ''
+* show_link              => true
+* show_name              => true
+* show_description       => false
+* show_count             => false
+* show_image             => true
+* image_size             => 'full'
+
+#### Featured images
+
+If the `show_image` parameter is set to `true`, the shortcode will look for the featured image of the latest post in the term. You can change the size of the featured image with the `image_size` attribute.
 
 ## Installation
 
