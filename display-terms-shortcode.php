@@ -62,6 +62,12 @@ function add_shortcode( $atts ) {
 		'show_count'             => false,
 		'show_image'             => true,
 		'image_size'             => 'full',
+		'post_type'              => 'post',
+		'post_include'           => [],
+		'post_exclude'           => [],
+		'post_order'             => 'DESC',
+		'post_orderby'           => 'modified',
+		'number_to_search'       => 10,
 		'parent_element'         => 'ul',
 		'child_element'          => 'li',
 		'parent_class'           => 'terms-list',
@@ -92,20 +98,22 @@ function add_shortcode( $atts ) {
 
 		if ( $atts['show_image'] ) {
 			$posts = get_posts( apply_filters( 'display_terms_shortcode_latest', [
-				'posts_per_page' => 10,
-				'cat'            => $term->term_id,
-				'orderby'        => 'modified',
+				'category'       => $term->term_id,
+				'posts_per_page' => $atts['number_to_search'],
+				'post_type'      => $atts['post_type'],
+				'include'        => $atts['post_include'],
+				'exclude'        => $atts['post_exclude'],
+				'order'          => $atts['post_order'],
+				'orderby'        => $atts['post_orderby'],
 			] ) );
 
 			foreach ( $posts as $post ) {
-				$image_id = get_post_thumbnail_id( $post->ID );
+				$image_id = apply_filters( 'display_terms_shortcode_image_id', get_post_thumbnail_id( $post->ID ), $term->term_id );
 
 				if ( $image_id ) {
 					break;
 				}
 			}
-
-			$image_id = apply_filters( 'display_terms_shortcode_image_id', $image_id, $term->term_id );
 
 			if ( isset( $image_id ) && $image_id ) {
 				$alt    = get_post_meta( $image_id, '_wp_attachment_image_alt', true );

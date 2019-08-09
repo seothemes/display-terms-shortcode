@@ -51,6 +51,12 @@ To use the shortcode, simply place the `[display-terms]` shortcode in any post, 
 * show_count             => false
 * show_image             => true
 * image_size             => 'full'
+* post_type              => 'post',
+* post_include           => [],
+* post_exclude           => [],
+* post_order             => 'DESC',
+* post_orderby           => 'modified',
+* number_to_search       => 10,
 * parent_element         => 'ul',
 * child_element          => 'li',
 * parent_class           => 'terms-list',
@@ -81,6 +87,10 @@ Manual Plugin Installation
 6. Click Activate to activate it.
 
 == Changelog ==
+
+= 2019/08/09 - 1.0.1 =
+* Add ability to choose post type to retrieve image from.
+* Add other get_posts parameters.
 
 = 2019/08/09 - 1.0.0 =
 * Plugin overhaul.
