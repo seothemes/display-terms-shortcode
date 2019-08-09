@@ -3,34 +3,34 @@
  * Plugin Name: Display Terms Shortcode
  * Plugin URI:  https://github.com/seothemes/display-terms-shortcode/
  * Description: Display a list of terms using the [display-terms] shortcode.
- * Version:     0.1.2
+ * Version:     1.0.0
  * Author:      SEO Themes
- * Author URI:  https://www.seothemes.com
- * License:     GPL-2.0+
- * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain: jetpack
+ * Author URI:  https://seothemes.com/
+ * License:     GPL-3.0-or-later
+ * License URI: http://www.gnu.org/licenses/gpl-3.0.txt
+ * Text Domain: display-terms-shortcode
  * Domain Path: /languages
- *
- * @package   Display Terms Shortcode
  */
 
-// Add the shortcode.
-add_shortcode( 'display-terms', 'display_terms_shortcode' );
+namespace SeoThemes\DisplayTermsShortcode;
 
+// Prevent direct file access.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+\add_shortcode( 'display-terms', __NAMESPACE__ . '\add_shortcode' );
 /**
  * Create the shortcode.
  *
+ * @since 1.0.0
+ *
  * @param  array $atts Shortcode attributes.
+ *
  * @return string
  */
-function display_terms_shortcode( $atts ) {
-
-	// Original Attributes, for filters.
-	$original_atts = $atts;
-
-	// Pull in shortcode attributes and set defaults.
-	// https://developer.wordpress.org/reference/functions/get_terms/#comment-2180.
-	$atts = shortcode_atts( array(
+function add_shortcode( $atts ) {
+	$atts = shortcode_atts( [
 		'taxonomy'               => 'category',
 		'orderby'                => 'name',
 		'order'                  => 'ASC',
@@ -54,7 +54,7 @@ function display_terms_shortcode( $atts ) {
 		'cache_domain'           => 'core',
 		'update_term_meta_cache' => true,
 		'meta_query'             => '',
-		'meta_key'               => array(),
+		'meta_key'               => [],
 		'meta_value'             => '',
 		'show_link'              => true,
 		'show_name'              => true,
@@ -62,98 +62,68 @@ function display_terms_shortcode( $atts ) {
 		'show_count'             => false,
 		'show_image'             => true,
 		'image_size'             => 'full',
-	), $atts, 'display-terms' );
-
-	// Add image filter.
-	add_filter( 'get_terms', 'display_terms_get_image', 10, 3 );
+		'parent_element'         => 'ul',
+		'child_element'          => 'li',
+		'parent_class'           => 'terms-list',
+		'child_class'            => 'terms-list-item',
+	], $atts, 'display-terms' );
 
 	$terms  = get_terms( $atts );
-	$output = '<ul class="terms-list">';
+	$output = sprintf( '<%s class="%s">', $atts['parent_element'], $atts['parent_class'] );
 
-	// Loop through terms and output HTML.
 	foreach ( $terms as $term ) {
-		$output .= '<li class="terms-list-item term-' . $term->slug . '">';
+		$output .= sprintf( '<%s class="%s term-%s">', $atts['child_element'], $atts['child_class'], esc_attr( $term->slug ) );
 
-		// Display term link.
 		if ( $atts['show_link'] ) {
-			$output .= '<a href="' . get_term_link( $term->term_id ) . '" class="term-link">';
+			$output .= sprintf( '<a href="%s" class="term-link">', esc_url( get_term_link( $term->term_id ) ) );
 		}
 
-		// Display term name.
 		if ( $atts['show_name'] ) {
-			$output .= '<b class="term-name">' . esc_html( $term->name ) . '</b>';
+			$output .= sprintf( '<b class="term-name">%s</b>', esc_html( $term->name ) );
 		}
 
-		// Display term description.
-		if ( $atts['show_description'] ) {
-			$output .= '<p class="term-description">' . esc_html( $term->description ) . '</p>';
+		if ( $atts['show_description'] && ! empty( $term->description ) ) {
+			$output .= sprintf( '<p class="term-description">%s</p>', esc_html( $term->description ) );
 		}
 
-		// Display term count.
 		if ( $atts['show_count'] ) {
-			$output .= '<span class="term-count">' . esc_html( $term->count ) . '</span>';
+			$output .= sprintf( '<span class="term-count">%s</span>', esc_html( $term->count ) );
 		}
 
-		// Display term image.
 		if ( $atts['show_image'] ) {
+			$posts = get_posts( apply_filters( 'display_terms_shortcode_latest', [
+				'posts_per_page' => 10,
+				'cat'            => $term->term_id,
+				'orderby'        => 'modified',
+			] ) );
 
-			if ( '' !== $term->latest_post ) {
-				$output .= '<img src="' . wp_get_attachment_image_url( $term->latest_post, $atts['image_size'] ) . '" alt="' . $term->name . ' ' . $term->taxonomy . '">';
+			foreach ( $posts as $post ) {
+				$image_id = get_post_thumbnail_id( $post->ID );
+
+				if ( $image_id ) {
+					break;
+				}
+			}
+
+			$image_id = apply_filters( 'display_terms_shortcode_image_id', $image_id, $term->term_id );
+
+			if ( isset( $image_id ) && $image_id ) {
+				$alt    = get_post_meta( $image_id, '_wp_attachment_image_alt', true );
+				$attr   = [
+					'alt' => $alt ? $alt : $term->name . ' ' . $term->taxonomy,
+				];
+				$output .= wp_get_attachment_image( $image_id, $atts['image_size'], false, $attr );
 			}
 		}
 
 		if ( $atts['show_link'] ) {
 			$output .= '</a>';
 		}
-		$output .= '</li>';
+
+		$output .= sprintf( '</%s>', $atts['child_element'] );
 	}
 
-	$output .= '</ul>';
+	$output .= sprintf( '</%s>', $atts['parent_element'] );
 
-	// Remove image filter.
-	remove_filter( 'get_terms', 'display_terms_get_image', 10, 3 );
-
-	return $output;
-
-}
-
-/**
- * Gets the latest post's featured image for each term.
- *
- * @param  array $terms      Loop terms.
- * @param  array $taxonomies Loop taxonomies.
- * @param  array $args       Passed in args.
- * @return array
- */
-function display_terms_get_image( $terms, $taxonomies, $args ) {
-
-	if ( ! $terms ) {
-		return;
-	}
-
-	foreach ( $terms as &$term ) {
-		$parent = new WP_Query(
-			array(
-				'cat'    => $term->term_id,
-				'fields' => 'ids',
-			)
-		);
-
-		if ( $parent->have_posts() ) {
-			$attach = new WP_Query(
-				array(
-					'post_parent__in' => $parent->posts,
-					'post_type'       => 'attachment',
-					'post_status'     => 'inherit',
-					'posts_per_page'  => 1,
-				)
-			);
-			if ( $attach->have_posts() ) {
-				$term->latest_post = $attach->posts[0]->ID;
-			} else {
-				$term->latest_post = ''; // TODO: Add placeholder image.
-			}
-		}
-	}
-	return $terms;
+	return apply_filters( 'display_terms_shortcode_output', $output );
 }

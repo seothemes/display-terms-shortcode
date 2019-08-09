@@ -52,6 +52,10 @@ To use the shortcode, simply place the `[display-terms]` shortcode in any post, 
 * show_count             => false
 * show_image             => true
 * image_size             => 'full'
+* parent_element         => 'ul',
+* child_element          => 'li',
+* parent_class           => 'terms-list',
+* child_class            => 'terms-list-item',
 
 #### Featured images
 
@@ -79,6 +83,14 @@ Manual Plugin Installation
 6. Click Activate to activate it.
 
 ## Changelog
+
+= 2019/08/09 - 1.0.0 =
+* Plugin overhaul.
+* Added more parameters and filters.
+* Removed heavy function.
+
+= 2017/08/09 - 0.1.1 =
+* Plugin clean up.
 
 = 2017/08/08 - 0.1.0 =
 * Initial release.

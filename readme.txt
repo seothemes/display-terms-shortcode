@@ -1,16 +1,17 @@
 === Display Terms Shortcode ===
 Contributors: seothemes
 Tags: terms, shortcode, categories, tags, list
-Donate link: https://seothemes.com
-Requires at least: 4.8
-Tested up to: 4.8
+Donate link: https://seothemes.com/
+Requires at least: 4.9.1
+Tested up to: 5.2.2
 Stable tag: trunk
-License: GPL-2.0+
-License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+License: GPL-3.0-or-later
+License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
 Display a listing of terms using the [display-terms] shortcode
 
 == Description ==
+
 The Display Terms Shortcode was written to allow users to easily display listings of terms without knowing PHP or editing template files.
 
 Add the shortcode in a post, page or widget and use the arguments to query based on tag, category, post type, and many other possibilities. You can also customize the output with parameters like: include, child_of, and show_image.
@@ -50,6 +51,10 @@ To use the shortcode, simply place the `[display-terms]` shortcode in any post, 
 * show_count             => false
 * show_image             => true
 * image_size             => 'full'
+* parent_element         => 'ul',
+* child_element          => 'li',
+* parent_class           => 'terms-list',
+* child_class            => 'terms-list-item',
 
 = Featured images = 
 
@@ -76,6 +81,11 @@ Manual Plugin Installation
 6. Click Activate to activate it.
 
 == Changelog ==
+
+= 2019/08/09 - 1.0.0 =
+* Plugin overhaul.
+* Added more parameters and filters.
+* Removed heavy function.
 
 = 2017/08/09 - 0.1.1 =
 * Plugin clean up.
